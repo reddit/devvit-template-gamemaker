@@ -56,7 +56,11 @@ body {
   min-height: fill-available;
   min-height: 100svh;
   min-width: 100vw;
-  background: radial-gradient(56.63% 56.63% at 50% 43.37%, #1c1726 0%, #060612 100%);
+  background: radial-gradient(
+    56.63% 56.63% at 50% 43.37%,
+    #1c1726 0%,
+    #060612 100%
+  );
   display: flex;
   flex-direction: column;
   overflow-x: hidden;

@@ -19,7 +19,7 @@ Before you begin, ensure you have the following installed and configured:
 
 - **Node.js 22+** - Download from [nodejs.org](https://nodejs.org/)
 - **GameMaker** - Any recent 2024.1400.3 Beta release (or newer), which you can download from [the release notes site](https://releases.gamemaker.io/) and must have also configured already for GX.games YYC development by following [its setup guide](https://github.com/YoYoGames/GameMaker-Bugs/wiki#platform-setup-guides)
-    - You may use older versions of GameMaker but will need to use the [GMEXT-Reddit Extension](https://github.com/YoYoGames/GMEXT-Reddit/) which includes the example project and requires you to build your game with the gx.games target rather than the reddit target. Further details can be found in the extension repository.
+  - You may use older versions of GameMaker but will need to use the [GMEXT-Reddit Extension](https://github.com/YoYoGames/GMEXT-Reddit/) which includes the example project and requires you to build your game with the gx.games target rather than the reddit target. Further details can be found in the extension repository.
 - **Reddit Developer Account** - Sign up at [developers.reddit.com](https://developers.reddit.com/)
 
 ---
@@ -72,6 +72,7 @@ Open the GameMaker project that you want to deploy to Reddit.
 In the **Devvit Project ID** field, enter the short, no-spaces game name that you registered with Reddit earlier
 
 **Example:**
+
 ```
 my-game
 ```
@@ -79,6 +80,7 @@ my-game
 In the **Devvit Project Path** field, enter the full path to your Devvit project directory that you created in the previous section.
 
 **Example:**
+
 ```
 C:\Users\YourName\Projects\my-game
 ```
@@ -90,6 +92,7 @@ Click **OK** or **Apply** to save your settings.
 #### Step 4: Verify GameMaker Export Settings
 
 Ensure your project is configured to export to WebAssembly:
+
 - **Target Platform**: Reddit
 - **Output Format**: GMS2 VM
 
@@ -112,6 +115,7 @@ npm run dev
 **You only need to do this once per GameMaker session** - leave the terminal app running throughout your development session and then close it whenever you're done with all your Reddit builds for the day.
 
 This command does several things:
+
 - Starts a local development server
 - Uploads your app to Reddit's Devvit platform
 - Provides a link to test your app on Reddit (not clickable - you will need to copy/paste it manually the first time and thereafter can just refresh your browser tab
@@ -168,6 +172,7 @@ When you're ready to test your changes:
 > If not running on Windows, ensure that execute permissions are enabled on the `setup-gamemaker-devvit.sh` script within your devvit project
 
 GameMaker will:
+
 - Build your game to WebAssembly
 - Automatically copy the necessary files to your Devvit project directory (specified in Game Options)
 - The build output goes to `src/client/public/` in your Devvit project
@@ -175,6 +180,7 @@ GameMaker will:
 #### Step 3: Wait for Devvit to Detect Changes
 
 The `npm run dev` process (still running in your terminal) will shortly thereafter:
+
 - Automatically detect the new/changed files
 - Re-upload your game to Reddit's platform
 - Display upload progress in the terminal
@@ -184,6 +190,7 @@ Wait for the update to complete. Devvit will provide a link to the updated commu
 #### Step 4: Test on Reddit
 
 Once the upload completes:
+
 1. Open the link provided by `npm run dev` in your browser (or refresh if already open)
 2. Test your game directly on Reddit
 3. Iterate!
@@ -252,10 +259,12 @@ your-project/
 ## Adding Game Features
 
 ### Backend APIs
+
 Add game-specific endpoints in `src/server/index.ts`:
+
 ```typescript
 // Example: Save player score
-router.post("/api/save-score", async (req, res) => {
+router.post('/api/save-score', async (req, res) => {
   const { score } = req.body;
   // Save to Redis, database, etc.
   res.json({ success: true });
@@ -263,7 +272,9 @@ router.post("/api/save-score", async (req, res) => {
 ```
 
 ### Type Definitions
+
 Add API types in `src/shared/types/api.ts`:
+
 ```typescript
 export type SaveScoreRequest = {
   score: number;
@@ -278,6 +289,7 @@ export type SaveScoreRequest = {
 ### `npm run dev` doesn't detect changes
 
 **Solution:**
+
 - Verify the Devvit Project Path in GameMaker is correct
 - Ensure files are being copied to the correct directory (`src/client/public/`)
 - Check terminal for any error messages
@@ -286,6 +298,7 @@ export type SaveScoreRequest = {
 ### GameMaker build fails
 
 **Solution:**
+
 - Check that the Reddit platform is properly configured
 - Ensure the Devvit Project Path exists and is writable
 - As a sanity-check, see if you can successfully build packages for the GX.games target inside GameMaker, rather than the Reddit one. If you can, check your OS file permissions/antivirus client are not blocking your Reddit-specific folders.
@@ -293,6 +306,7 @@ export type SaveScoreRequest = {
 ### Game doesn't appear on Reddit
 
 **Solution:**
+
 - Confirm `npm run dev` completed the upload successfully
 - Check the terminal for any error messages
 - Try a hard refresh in your browser (Ctrl+Shift+R or Cmd+Shift+R)
@@ -301,6 +315,7 @@ export type SaveScoreRequest = {
 ### Files are in the wrong location
 
 **Solution:**
+
 - GameMaker should copy files to `src/client/public/` in your Devvit project
 - Verify the Devvit Project Path setting in GameMaker Game Options
 - Check your OS file permissions/antivirus client are not blocking your Reddit-specific folders.
@@ -308,6 +323,7 @@ export type SaveScoreRequest = {
 ### Node.js version issues
 
 **Solution:**
+
 - Devvit requires Node.js 22+
 - Run `node --version` to check your version
 - Update Node.js if necessary: [Download latest version](https://nodejs.org/)
@@ -315,8 +331,9 @@ export type SaveScoreRequest = {
 ### setup-gamemaker-devvit.sh Permissions Issue
 
 **Solution**
+
 - Ensure that execute permissions are enabled on the `setup-gamemaker-devvit.sh` script
-    - Run `ls -l setup-gamemaker-devvit.sh` to verify permissions
+  - Run `ls -l setup-gamemaker-devvit.sh` to verify permissions
 - Run `chmod +x setup-gamemaker-devvit.sh` to grant execute permissions
 
 ---
