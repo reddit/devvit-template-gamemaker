@@ -2,6 +2,7 @@ import type { InitResponse } from '../shared/api';
 
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Module: any;
     GM_tick?: (time: number) => void;
     onGameSetWindowSize?: (width: number, height: number) => void;
@@ -10,19 +11,28 @@ declare global {
     log_next_game_state?: () => void;
     wallpaper_update_config?: (config: string) => void;
     wallpaper_reset_config?: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setAddAsyncMethod?: (method: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setJSExceptionHandler?: (handler: any) => void;
     hasJSExceptionHandler?: () => boolean;
     doJSExceptionHandler?: (exceptionJSON: string) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setWadLoadCallback?: (callback: any) => void;
     onFirstFrameRendered?: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     triggerAd?: (adId: string, ...callbacks: any[]) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     triggerPayment?: (itemId: string, callback: any) => void;
     toggleElement?: (id: string) => void;
     set_acceptable_rollback?: (frames: number) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     report_stats?: (statsData: any) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     g_pAddAsyncMethod?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     g_pJSExceptionHandler?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     g_pWadLoadCallback?: any;
   }
 }
@@ -45,7 +55,8 @@ class GameLoader {
   private loadingElement: HTMLElement;
   private startingHeight?: number;
   private startingWidth?: number;
-  private startingAspect?: number;
+  // Used by the aspect-ratio example in ensureAspectRatio (see below).
+  // private startingAspect?: number;
 
   constructor() {
     this.statusElement = document.getElementById('status') as HTMLElement;
@@ -62,7 +73,7 @@ class GameLoader {
 
     this.setupModule();
     this.setupResizeObserver();
-    this.loadGame();
+    void this.loadGame();
   }
 
   private setupModule() {
@@ -150,7 +161,7 @@ class GameLoader {
       console.log(`Window size set to width: ${width}, height: ${height}`);
       this.startingHeight = height;
       this.startingWidth = width;
-      this.startingAspect = this.startingWidth / this.startingHeight;
+      // this.startingAspect = this.startingWidth / this.startingHeight;
     };
 
     const resizeObserver = new ResizeObserver(() => {
@@ -174,23 +185,30 @@ class GameLoader {
 
     this.canvasElement.classList.add('active');
 
-    const maxWidth = window.innerWidth;
-    const maxHeight = window.innerHeight;
-    let newHeight: number, newWidth: number;
+    // Example: compute dimensions that preserve the game's starting aspect
+    // ratio within the current viewport. Currently the canvas is simply
+    // stretched to 100%, but this snippet is kept for reference.
+    //
+    // const maxWidth = window.innerWidth;
+    // const maxHeight = window.innerHeight;
+    // let newHeight: number, newWidth: number;
+    //
+    // const heightQuotient = this.startingHeight / maxHeight;
+    // const widthQuotient = this.startingWidth / maxWidth;
+    //
+    // if (heightQuotient > widthQuotient) {
+    //   newHeight = maxHeight;
+    //   newWidth = newHeight * this.startingAspect!;
+    // } else {
+    //   newWidth = maxWidth;
+    //   newHeight = newWidth / this.startingAspect!;
+    // }
+    //
+    // this.canvasElement.style.height = `${newHeight}px`;
+    // this.canvasElement.style.width = `${newWidth}px`;
 
-    const heightQuotient = this.startingHeight / maxHeight;
-    const widthQuotient = this.startingWidth / maxWidth;
-
-    if (heightQuotient > widthQuotient) {
-      newHeight = maxHeight;
-      newWidth = newHeight * this.startingAspect!;
-    } else {
-      newWidth = maxWidth;
-      newHeight = newWidth / this.startingAspect!;
-    }
-
-    this.canvasElement.style.height = '100%'; //`${newHeight}px`;
-    this.canvasElement.style.width = '100%'; //`${newWidth}px`;
+    this.canvasElement.style.height = '100%';
+    this.canvasElement.style.width = '100%';
   }
 
   private async loadRunnerManifest(): Promise<void> {
@@ -247,6 +265,7 @@ class GameLoader {
   private setupGameMakerGlobals() {
     // GameMaker async method support - make variables globally accessible
     window.g_pAddAsyncMethod = -1;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.setAddAsyncMethod = (asyncMethod: any) => {
       window.g_pAddAsyncMethod = asyncMethod;
       console.log('setAddAsyncMethod called with:', asyncMethod);
@@ -254,6 +273,7 @@ class GameLoader {
 
     // Exception handling - make variables globally accessible
     window.g_pJSExceptionHandler = undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.setJSExceptionHandler = (exceptionHandler: any) => {
       if (typeof exceptionHandler === 'function') {
         window.g_pJSExceptionHandler = exceptionHandler;
@@ -276,6 +296,7 @@ class GameLoader {
 
     // WAD/Resource loading - make variables globally accessible
     window.g_pWadLoadCallback = undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.setWadLoadCallback = (wadLoadCallback: any) => {
       window.g_pWadLoadCallback = wadLoadCallback;
     };
@@ -285,6 +306,7 @@ class GameLoader {
     };
 
     // Ad system stubs
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.triggerAd = (adId: string, ...callbacks: any[]) => {
       console.log('triggerAd called with adId:', adId);
       // For now, just call the callbacks to simulate ad completion
@@ -293,6 +315,7 @@ class GameLoader {
       }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.triggerPayment = (itemId: string, callback: any) => {
       console.log('triggerPayment called with itemId:', itemId);
       // Simulate payment completion
@@ -317,6 +340,7 @@ class GameLoader {
       console.log('Set acceptable rollback frames:', frames);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.report_stats = (statsData: any) => {
       console.log('Game stats reported:', statsData);
     };
@@ -335,9 +359,11 @@ class GameLoader {
 
     // Mock accelerometer API to prevent permissions policy violations
     if (!('DeviceMotionEvent' in window)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).DeviceMotionEvent = class MockDeviceMotionEvent extends (
         Event
       ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         constructor(type: string, eventInitDict?: any) {
           super(type, eventInitDict);
         }
@@ -345,8 +371,10 @@ class GameLoader {
     }
 
     if (!('DeviceOrientationEvent' in window)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).DeviceOrientationEvent =
         class MockDeviceOrientationEvent extends Event {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           constructor(type: string, eventInitDict?: any) {
             super(type, eventInitDict);
           }
