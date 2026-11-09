@@ -382,6 +382,50 @@ class GameLoader {
     }
   }
 
+  private async loadAssetsScripts(): Promise<void> {
+    try {
+      const response = await fetch('/assets-manifest.json', { cache: 'no-cache' });
+      if (!response.ok) {
+        console.log('No assets manifest found, skipping asset scripts');
+        return;
+      }
+
+      const assetScripts: string[] = await response.json();
+      if (!Array.isArray(assetScripts) || assetScripts.length === 0) {
+        console.log('No asset scripts to load');
+        return;
+      }
+
+      console.log(`Loading ${assetScripts.length} asset script(s) before runner.js...`);
+
+      // Load scripts sequentially
+      for (const scriptPath of assetScripts) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = `/${scriptPath}`;
+          script.type = 'text/javascript';
+
+          script.onload = () => {
+            console.log(`Loaded asset script: ${scriptPath}`);
+            resolve();
+          };
+
+          script.onerror = () => {
+            console.error(`Failed to load asset script: ${scriptPath}`);
+            // Continue loading even if one fails
+            resolve();
+          };
+
+          document.head.appendChild(script);
+        });
+      }
+
+      console.log('All asset scripts loaded');
+    } catch (error) {
+      console.warn('Error loading assets manifest:', error);
+    }
+  }
+
   private async loadGame() {
     try {
       // First try to get initial data from the server
@@ -392,6 +436,9 @@ class GameLoader {
 
       // Setup required global functions before loading GameMaker script
       this.setupGameMakerGlobals();
+
+      // Load asset scripts before runner.js
+      await this.loadAssetsScripts();
 
       // Load the GameMaker runner script
       const script = document.createElement('script');

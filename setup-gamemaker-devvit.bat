@@ -24,6 +24,7 @@ set PROJECT_NAME=%~2
 set "SUBREDDIT_NAME=%PROJECT_NAME:-=_%"
 set RUNNER_DIR=%GAMEMAKER_DIR%\runner
 set CLIENT_PUBLIC=%cd%\src\client\public
+set CLIENT_ASSETS=%CLIENT_PUBLIC%\assets
 
 :: Check if GameMaker directory exists
 if not exist "%GAMEMAKER_DIR%" (
@@ -49,9 +50,47 @@ echo GameMaker directory: %GAMEMAKER_DIR%
 echo Project name: %PROJECT_NAME%
 echo Devvit project: %cd%
 
-:: Copy all files from runner directory to public directory
+:: Create assets directory if it doesn't exist
+if not exist "%CLIENT_ASSETS%" mkdir "%CLIENT_ASSETS%"
+
+:: Copy all files from GameMaker export directory (excluding subdirectories) to assets
 echo Copying GameMaker files to game directory...
+echo Copying files from main export directory to assets...
+for %%f in ("%GAMEMAKER_DIR%\*") do (
+    if not exist "%%f\" (
+        copy "%%f" "%CLIENT_ASSETS%\" /Y >nul
+    )
+)
+
+:: Copy all files from runner directory to public directory
+echo Copying files from runner directory to public...
 xcopy "%RUNNER_DIR%\*" "%CLIENT_PUBLIC%\" /Y /Q
+
+:: Generate manifest of .js files in assets directory
+echo Generating assets manifest...
+set ASSETS_MANIFEST=%CLIENT_PUBLIC%\assets-manifest.json
+
+:: Count files first
+set count=0
+for %%f in ("%CLIENT_ASSETS%\*.js") do (
+    if exist "%%f" set /a count+=1
+)
+
+:: Write JSON array
+echo [ > "%ASSETS_MANIFEST%"
+set current=0
+for %%f in ("%CLIENT_ASSETS%\*.js") do (
+    if exist "%%f" (
+        set /a current+=1
+        if !current! equ !count! (
+            echo   "assets/%%~nxf" >> "%ASSETS_MANIFEST%"
+        ) else (
+            echo   "assets/%%~nxf", >> "%ASSETS_MANIFEST%"
+        )
+    )
+)
+echo ] >> "%ASSETS_MANIFEST%"
+echo Assets manifest created with !count! JavaScript file^(s^)
 
 echo.
 echo GameMaker game setup complete!
@@ -65,5 +104,9 @@ echo 1. Run "npm run dev" to start the development server
 echo 2. Your GameMaker game should now load in the Devvit app
 echo.
 echo Files copied:
+echo - Export directory files → src\client\public\assets\
 echo - Core runtime files → src\client\public\ (root level)
+echo - Assets manifest → src\client\public\assets-manifest.json
+echo.
+echo Note: Asset JavaScript files will be loaded automatically before runner.js
 echo.
