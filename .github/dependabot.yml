@@ -29,3 +29,7 @@ updates:
         patterns:
           - "vite"
           - "@vitejs/*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
