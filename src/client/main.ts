@@ -1,5 +1,9 @@
 import type { InitResponse } from '../shared/api';
 
+// import runner.json for game to trigger devvit reupload upon change
+import GMRunnerConfig from "./public/runner.json"
+void GMRunnerConfig;
+
 declare global {
   interface Window {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
